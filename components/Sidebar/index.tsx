@@ -15,7 +15,13 @@ const Sidebar: FC<SidebarProps> = ({}) => {
 
   const items = [
     { label: 'Home', href: '/', icon: BsHouseFill },
-    { label: 'Notifications', href: '/notifications', icon: BsBellFill, auth: true },
+    {
+      label: 'Notifications',
+      href: '/notifications',
+      icon: BsBellFill,
+      auth: true,
+      alert: currentUser?.hasNotification
+    },
     { label: 'Profile', href: `/users/${currentUser?.id}`, icon: FaUser, auth: true }
   ]
 
@@ -31,6 +37,7 @@ const Sidebar: FC<SidebarProps> = ({}) => {
               label={item.label}
               icon={item.icon}
               auth={item.auth}
+              alert={item.alert}
             />
           ))}
           {currentUser && <SidebarItem onClick={() => signOut()} icon={BiLogOut} label='Logout' />}

@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import Button from '../ui/Button'
 import Avatar from '../ui/Avatar'
+import usePost from '@/hooks/usePost'
 
 interface FormProps {
   placeholder: string
@@ -19,6 +20,7 @@ const Form: FC<FormProps> = ({ placeholder, isComment, postId }) => {
   const loginModal = useLoginModal()
   const { data: currentUser } = useCurrentUser()
   const { mutate: mutatePosts } = usePosts()
+  const { mutate: mutatePost } = usePost(postId as string)
 
   const [body, setBody] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -26,17 +28,21 @@ const Form: FC<FormProps> = ({ placeholder, isComment, postId }) => {
   const onSubmit = useCallback(async () => {
     try {
       setIsLoading(true)
-      await axios.post('/api/posts', { body })
+      const url = isComment ? `/api/comments?postId=${postId}` : '/api/posts'
+
+      await axios.post(url, { body })
+
       toast.success('Created successfully')
       setBody('')
       mutatePosts()
+      mutatePost()
     } catch (error) {
       console.error(error)
       toast.error('Something went wrong')
     } finally {
       setIsLoading(false)
     }
-  }, [mutatePosts, body])
+  }, [mutatePosts, body, isComment, postId, mutatePost])
 
   return (
     <div className='border-b-[1px] border-neutral-800 px-5 py-2'>
